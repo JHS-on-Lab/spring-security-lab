@@ -15,6 +15,14 @@ public interface UserService {
     Page<UserResponseDto> getUsers(UserRequestDto request);
 
     /**
+     * 사용자 아이디로 사용자 정보 단건 조회합니다.
+     *
+     * @param username 사용자 아이디
+     * @return 조회된 사용자 정보
+     */
+    UserResponseDto getUserByUsername(String username);
+
+    /**
      * 새로운 사용자를 등록한다.
      *
      * @param request 사용자 등록에 필요한 정보

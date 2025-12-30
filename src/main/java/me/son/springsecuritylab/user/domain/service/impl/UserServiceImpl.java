@@ -2,11 +2,13 @@ package me.son.springsecuritylab.user.domain.service.impl;
 
 import lombok.RequiredArgsConstructor;
 
+import me.son.springsecuritylab.global.exception.BusinessException;
 import me.son.springsecuritylab.user.domain.entity.User;
 import me.son.springsecuritylab.user.domain.repository.UserRepository;
 import me.son.springsecuritylab.user.domain.service.UserService;
 import me.son.springsecuritylab.user.dto.UserRequestDto;
 import me.son.springsecuritylab.user.dto.UserResponseDto;
+import me.son.springsecuritylab.user.error.UserErrorCode;
 import me.son.springsecuritylab.user.mapper.UserMapper;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,20 +24,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponseDto> getUsers(UserRequestDto request) {
-        try {
-            Pageable pageable = PageRequest.of(
-                    request.getPage(),
-                    request.getSize()
-            );
+        Pageable pageable = PageRequest.of(
+                request.getPage(),
+                request.getSize()
+        );
 
-            return userRepository.findAll(pageable)
-                    .map(UserResponseDto::from);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return userRepository.findAll(pageable)
+                .map(UserResponseDto::from);
+    }
+
+    @Override
+    public UserResponseDto getUserByUsername(String username) {
+        User user = userRepository.findById(username).orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+        return UserResponseDto.from(user);
     }
 
     @Override
@@ -44,10 +45,8 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.save(UserMapper.toEntity(request));
             return UserResponseDto.from(user);
         } catch (DataIntegrityViolationException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            // username / email unique 제약 위반
+            throw new BusinessException(UserErrorCode.DUPLICATE_USER);
         }
-        return null;
     }
 }

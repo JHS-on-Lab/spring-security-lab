@@ -19,16 +19,23 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("")
+    @GetMapping
     public ApiResponse<PageResponseDto<UserResponseDto>> getUsers(@ModelAttribute UserRequestDto request) {
-        log.info("getUsers request : {}", request.toString());
+        log.info("getUsers request: {}", request);
         Page<UserResponseDto> page = userService.getUsers(request);
         return ApiResponse.success(PageResponseDto.from(page));
     }
 
-    @PostMapping("")
+    @GetMapping("/{username}")
+    public ApiResponse<UserResponseDto> getUserByUsername(@PathVariable String username) {
+        log.info("getUserByUsername request username: {}", username);
+        UserResponseDto user = userService.getUserByUsername(username);
+        return ApiResponse.success(user);
+    }
+
+    @PostMapping
     public ApiResponse<UserResponseDto> addUser(@RequestBody UserRequestDto request) {
-        log.info("addUser request : {}", request.toString());
+        log.info("addUser request: {}", request);
         UserResponseDto user = userService.addUser(request);
         return ApiResponse.success(user);
     }
