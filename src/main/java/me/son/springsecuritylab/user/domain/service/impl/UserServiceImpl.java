@@ -8,7 +8,7 @@ import me.son.springsecuritylab.user.domain.repository.UserRepository;
 import me.son.springsecuritylab.user.domain.service.UserService;
 import me.son.springsecuritylab.user.dto.UserRequestDto;
 import me.son.springsecuritylab.user.dto.UserResponseDto;
-import me.son.springsecuritylab.user.error.UserErrorCode;
+import me.son.springsecuritylab.user.exception.UserErrorCode;
 import me.son.springsecuritylab.user.mapper.UserMapper;
 
 import org.springframework.dao.DataIntegrityViolationException;

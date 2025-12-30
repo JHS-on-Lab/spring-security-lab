@@ -1,4 +1,4 @@
-package me.son.springsecuritylab.user.error;
+package me.son.springsecuritylab.user.exception;
 
 import me.son.springsecuritylab.global.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
