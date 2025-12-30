@@ -1,4 +1,4 @@
-package me.son.springsecuritylab.global.dto;
+package me.son.springsecuritylab.global.paging.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -3,7 +3,7 @@ package me.son.springsecuritylab.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import me.son.springsecuritylab.global.dto.PageResponseDto;
+import me.son.springsecuritylab.global.paging.dto.PageResponseDto;
 import me.son.springsecuritylab.global.response.ApiResponse;
 import me.son.springsecuritylab.user.domain.service.UserService;
 import me.son.springsecuritylab.user.dto.UserRequestDto;
