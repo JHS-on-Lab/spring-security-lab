@@ -9,6 +9,7 @@ import me.son.springsecuritylab.auth.jwt.dto.ParsedToken;
 
 import me.son.springsecuritylab.auth.jwt.exception.CustomJwtException;
 import me.son.springsecuritylab.auth.jwt.exception.JwtErrorCode;
+import me.son.springsecuritylab.user.domain.entity.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,11 +32,11 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String username, String role, long tokenExpirationMs) {
+    public String createToken(String username, Role role, long tokenExpirationMs) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + tokenExpirationMs);
         return Jwts.builder().subject(username)
-                .claim("role", role).issuedAt(now).expiration(expiry)
+                .claim("role", role.getName()).issuedAt(now).expiration(expiry)
                 .signWith(key)
                 .compact();
     }

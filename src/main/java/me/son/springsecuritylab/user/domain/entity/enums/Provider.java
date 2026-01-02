@@ -4,7 +4,7 @@ public enum Provider {
     KAKAO,
     GOOGLE;
 
-    public String getProvider() {
+    public String getName() {
         return name();
     }
 }
