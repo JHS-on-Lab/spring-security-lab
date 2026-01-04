@@ -1,5 +1,6 @@
 package me.son.springsecuritylab.user.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping
     public ApiResponse<PageResponseDto<UserResponseDto>> getUsers(@ModelAttribute UserRequestDto request) {
         log.info("getUsers request: {}", request);
@@ -26,6 +28,7 @@ public class UserController {
         return ApiResponse.success(PageResponseDto.from(page));
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/{username}")
     public ApiResponse<UserResponseDto> getUserByUsername(@PathVariable String username) {
         log.info("getUserByUsername request username: {}", username);

@@ -15,12 +15,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Page<UserResponseDto> getUsers(UserRequestDto request) {
@@ -42,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto addUser(UserRequestDto request) {
         try {
-            User user = userRepository.save(UserMapper.toEntity(request));
+            User user = userRepository.save(UserMapper.toEntity(request, passwordEncoder));
             return UserResponseDto.from(user);
         } catch (DataIntegrityViolationException e) {
             // username / email unique 제약 위반
