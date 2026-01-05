@@ -3,6 +3,7 @@ package me.son.springsecuritylab.user.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 import me.son.springsecuritylab.global.paging.dto.PageRequestDto;
 import me.son.springsecuritylab.user.domain.entity.enums.Provider;
 import me.son.springsecuritylab.user.domain.entity.enums.Role;

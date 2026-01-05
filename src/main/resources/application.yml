@@ -23,5 +23,5 @@ spring:
 jwt:
   secret-key: "my-secret-key-must-be-very-secure-and-long"
   expiration:
-    access: 20000
-    refresh: 100000
+    access: 60000
+    refresh: 600000

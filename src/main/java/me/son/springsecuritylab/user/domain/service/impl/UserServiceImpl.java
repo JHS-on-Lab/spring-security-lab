@@ -43,6 +43,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto addUser(UserRequestDto request) {
+        if (userRepository.existsById(request.getUsername())) {
+            throw new BusinessException(UserErrorCode.DUPLICATE_USERNAME);
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException(UserErrorCode.DUPLICATE_EMAIL);
+        }
+
         try {
             User user = userRepository.save(UserMapper.toEntity(request, passwordEncoder));
             return UserResponseDto.from(user);
