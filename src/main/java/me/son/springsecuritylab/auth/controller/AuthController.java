@@ -39,4 +39,21 @@ public class AuthController {
                 ;
     }
 
+    @PostMapping("/reissue")
+    public ApiResponse<AuthResponseDto> reissue(@CookieValue(value = "refreshToken") String refreshToken, HttpServletResponse response) {
+        log.info("reissue refreshToken: {}", refreshToken);
+        // refresh token 유효성 검사
+        CustomUserDetails user = authService.validateToken(refreshToken);
+
+        JwtDto tokens = authService.createTokensByUser(user.getUsername(), user.getRole());
+        // Refresh Token 은 HTTP Only Cookie 저장
+        addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
+
+        return ApiResponse.success(AuthResponseDto.builder()
+                .accessToken(tokens.getAccessToken())
+                .username(user.getUsername())
+                .build())
+                ;
+    }
+
 }

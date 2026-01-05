@@ -1,5 +1,6 @@
 package me.son.springsecuritylab.auth.domain.service.impl;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -7,6 +8,8 @@ import me.son.springsecuritylab.auth.domain.service.AuthService;
 import me.son.springsecuritylab.auth.dto.JwtDto;
 import me.son.springsecuritylab.auth.exception.AuthErrorCode;
 import me.son.springsecuritylab.auth.jwt.JwtProvider;
+import me.son.springsecuritylab.auth.jwt.dto.ParsedToken;
+import me.son.springsecuritylab.auth.jwt.exception.JwtErrorCode;
 import me.son.springsecuritylab.global.exception.BusinessException;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
 import me.son.springsecuritylab.user.domain.entity.enums.Role;
@@ -48,5 +51,21 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(jwtProvider.createToken(username, role, refreshTokenExpirationMs))
                 .build()
                 ;
+    }
+
+    @Override
+    public CustomUserDetails validateToken(String token) {
+        try {
+            // 파싱 및 검증
+            ParsedToken parsed = jwtProvider.parseToken(token);
+            String username = parsed.getSubject();
+            Claims claims = parsed.getClaims();
+            Role role = Role.valueOf(claims.get("role", String.class));
+            log.info("username: {}, role: {}", username, role);
+
+            return new CustomUserDetails(username, role);
+        } catch (Exception e) {
+            throw new BusinessException(JwtErrorCode.JWT_INVALID);
+        }
     }
 }

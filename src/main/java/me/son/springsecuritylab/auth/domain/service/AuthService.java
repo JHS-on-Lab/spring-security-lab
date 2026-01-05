@@ -22,4 +22,12 @@ public interface AuthService {
      * @return 생성된 JWT 토큰 정보
      */
     JwtDto createTokensByUser(String username, Role role);
+
+    /**
+     * JWT 토큰을 검증한다.
+     *
+     * @param token JWT 문자열
+     * @return 인증된 사용자 정보
+     */
+    CustomUserDetails validateToken(String token);
 }
