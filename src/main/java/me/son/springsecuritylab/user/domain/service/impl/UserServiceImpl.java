@@ -6,8 +6,10 @@ import me.son.springsecuritylab.global.exception.BusinessException;
 import me.son.springsecuritylab.user.domain.entity.User;
 import me.son.springsecuritylab.user.domain.repository.UserRepository;
 import me.son.springsecuritylab.user.domain.service.UserService;
-import me.son.springsecuritylab.user.dto.UserRequestDto;
-import me.son.springsecuritylab.user.dto.UserResponseDto;
+import me.son.springsecuritylab.user.dto.UserSearchRequestDto;
+import me.son.springsecuritylab.user.dto.UserSignUpRequestDto;
+import me.son.springsecuritylab.user.dto.UserSearchResponseDto;
+import me.son.springsecuritylab.user.dto.UserSignUpResponseDto;
 import me.son.springsecuritylab.user.exception.UserErrorCode;
 import me.son.springsecuritylab.user.mapper.UserMapper;
 
@@ -25,25 +27,25 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Page<UserResponseDto> getUsers(UserRequestDto request) {
+    public Page<UserSearchResponseDto> getUsers(UserSearchRequestDto request) {
         Pageable pageable = PageRequest.of(
                 request.getPage(),
                 request.getSize()
         );
 
         return userRepository.findAll(pageable)
-                .map(UserResponseDto::from);
+                .map(UserSearchResponseDto::from);
     }
 
     @Override
-    public UserResponseDto getUserByUsername(String username) {
-        User user = userRepository.findById(username).orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
-        return UserResponseDto.from(user);
+    public UserSearchResponseDto getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+        return UserSearchResponseDto.from(user);
     }
 
     @Override
-    public UserResponseDto addUser(UserRequestDto request) {
-        if (userRepository.existsById(request.getUsername())) {
+    public UserSignUpResponseDto addUser(UserSignUpRequestDto request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException(UserErrorCode.DUPLICATE_USERNAME);
         }
 
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             User user = userRepository.save(UserMapper.toEntity(request, passwordEncoder));
-            return UserResponseDto.from(user);
+            return UserSignUpResponseDto.from(user);
         } catch (DataIntegrityViolationException e) {
             // username / email unique 제약 위반
             throw new BusinessException(UserErrorCode.DUPLICATE_USER);

@@ -1,6 +1,7 @@
 package me.son.springsecuritylab.auth.domain.service.impl;
 
 import io.jsonwebtoken.Claims;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -45,10 +46,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtDto createTokensByUser(String username, Role role) {
+    public JwtDto createTokensByUser(Long id, String username, Role role) {
         return JwtDto.builder()
-                .accessToken(jwtProvider.createToken(username, role, accessTokenExpirationMs))
-                .refreshToken(jwtProvider.createToken(username, role, refreshTokenExpirationMs))
+                .accessToken(jwtProvider.createToken(id, username, role, accessTokenExpirationMs))
+                .refreshToken(jwtProvider.createToken(id, refreshTokenExpirationMs))
                 .build()
                 ;
     }
@@ -58,12 +59,13 @@ public class AuthServiceImpl implements AuthService {
         try {
             // 파싱 및 검증
             ParsedToken parsed = jwtProvider.parseToken(token);
-            String username = parsed.getSubject();
+            Long id = Long.valueOf(parsed.getSubject());
             Claims claims = parsed.getClaims();
+            String username = claims.get("username", String.class);
             Role role = Role.valueOf(claims.get("role", String.class));
-            log.info("username: {}, role: {}", username, role);
+            log.info("id: {}, username: {}, role: {}", id, username, role);
 
-            return new CustomUserDetails(username, role);
+            return new CustomUserDetails(id, username, role);
         } catch (Exception e) {
             throw new BusinessException(JwtErrorCode.JWT_INVALID);
         }

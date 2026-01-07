@@ -39,12 +39,13 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 // 파싱 및 검증
                 ParsedToken parsed = jwtProvider.parseToken(token);
-                String username = parsed.getSubject();
+                Long id = Long.valueOf(parsed.getSubject());
                 Claims claims = parsed.getClaims();
+                String username = claims.get("username", String.class);
                 Role role = Role.valueOf(claims.get("role", String.class));
-                log.info("username: {}, role: {}", username, role);
+                log.info("id: {}, username: {}, role: {}", id, username, role);
 
-                CustomUserDetails userDetails = new CustomUserDetails(username, role);
+                CustomUserDetails userDetails = new CustomUserDetails(id, username, role);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);

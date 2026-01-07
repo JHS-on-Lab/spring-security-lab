@@ -6,10 +6,10 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 import me.son.springsecuritylab.auth.jwt.dto.ParsedToken;
-
 import me.son.springsecuritylab.auth.jwt.exception.CustomJwtException;
 import me.son.springsecuritylab.auth.jwt.exception.JwtErrorCode;
 import me.son.springsecuritylab.user.domain.entity.enums.Role;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,11 +32,22 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String username, Role role, long tokenExpirationMs) {
+    public String createToken(Long id, String username, Role role, long tokenExpirationMs) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + tokenExpirationMs);
-        return Jwts.builder().subject(username)
-                .claim("role", role.name()).issuedAt(now).expiration(expiry)
+        return Jwts.builder().subject(String.valueOf(id))
+                .claim("username", username)
+                .claim("role", role.name())
+                .issuedAt(now).expiration(expiry)
+                .signWith(key)
+                .compact();
+    }
+
+    public String createToken(Long id, long tokenExpirationMs) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + tokenExpirationMs);
+        return Jwts.builder().subject(String.valueOf(id))
+                .issuedAt(now).expiration(expiry)
                 .signWith(key)
                 .compact();
     }
@@ -56,6 +67,7 @@ public class JwtProvider {
                     .claims(jws.getPayload())
                     .build()
                     ;
+
         } catch (ExpiredJwtException e) {
             throw new CustomJwtException(JwtErrorCode.JWT_EXPIRED);
         } catch (UnsupportedJwtException e) {

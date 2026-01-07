@@ -17,11 +17,12 @@ public interface AuthService {
     /**
      * 인증된 사용자 정보를 기반으로 JWT 토큰을 생성한다.
      *
-     * @param username 토큰에 포함될 사용자 식별자
+     * @param id 토큰에 포함될 사용자 식별자
+     * @param username 토큰 클레임에 포함될 사용자명
      * @param role     토큰 클레임에 포함될 사용자 권한 정보
      * @return 생성된 JWT 토큰 정보
      */
-    JwtDto createTokensByUser(String username, Role role);
+    JwtDto createTokensByUser(Long id, String username, Role role);
 
     /**
      * JWT 토큰을 검증한다.

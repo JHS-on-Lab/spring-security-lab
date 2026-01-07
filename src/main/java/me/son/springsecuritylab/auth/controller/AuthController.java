@@ -23,12 +23,12 @@ import static me.son.springsecuritylab.global.util.CookieUtil.addHttpOnlyCookie;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public ApiResponse<AuthResponseDto> login(@RequestBody AuthRequestDto request, HttpServletResponse response) {
-        log.info("login request: {}", request.toString());
+    @PostMapping("/sign-in")
+    public ApiResponse<AuthResponseDto> signIn(@RequestBody AuthRequestDto request, HttpServletResponse response) {
+        log.info("signIn request: {}", request.toString());
         CustomUserDetails user = authService.authenticate(request.getUsername(), request.getPassword());
 
-        JwtDto tokens = authService.createTokensByUser(user.getUsername(), user.getRole());
+        JwtDto tokens = authService.createTokensByUser(user.getId(), user.getUsername(), user.getRole());
         // Refresh Token 은 HTTP Only Cookie 저장
         addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
 
@@ -45,7 +45,7 @@ public class AuthController {
         // refresh token 유효성 검사
         CustomUserDetails user = authService.validateToken(refreshToken);
 
-        JwtDto tokens = authService.createTokensByUser(user.getUsername(), user.getRole());
+        JwtDto tokens = authService.createTokensByUser(user.getId(), user.getUsername(), user.getRole());
         // Refresh Token 은 HTTP Only Cookie 저장
         addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
 

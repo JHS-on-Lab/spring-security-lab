@@ -1,7 +1,7 @@
 package me.son.springsecuritylab.user.mapper;
 
 import me.son.springsecuritylab.user.domain.entity.User;
-import me.son.springsecuritylab.user.dto.UserRequestDto;
+import me.son.springsecuritylab.user.dto.UserSignUpRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserMapper {
@@ -13,12 +13,11 @@ public class UserMapper {
      * @param passwordEncoder 비밀번호 해시 처리를 위한 PasswordEncoder
      * @return User Entity
      */
-    public static User toEntity(UserRequestDto dto, PasswordEncoder passwordEncoder) {
+    public static User toEntity(UserSignUpRequestDto dto, PasswordEncoder passwordEncoder) {
         return User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(dto.getRole())
-                .provider(dto.getProvider())
                 .email(dto.getEmail())
                 .build();
     }
