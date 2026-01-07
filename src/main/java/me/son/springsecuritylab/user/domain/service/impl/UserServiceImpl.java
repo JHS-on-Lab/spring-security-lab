@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 
 import me.son.springsecuritylab.global.exception.BusinessException;
 import me.son.springsecuritylab.user.domain.entity.User;
+import me.son.springsecuritylab.user.domain.entity.UserIdentity;
+import me.son.springsecuritylab.user.domain.entity.enums.Provider;
+import me.son.springsecuritylab.user.domain.repository.UserIdentityRepository;
 import me.son.springsecuritylab.user.domain.repository.UserRepository;
 import me.son.springsecuritylab.user.domain.service.UserService;
 import me.son.springsecuritylab.user.dto.UserSearchRequestDto;
@@ -19,11 +22,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserIdentityRepository userIdentityRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -44,6 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserSignUpResponseDto addUser(UserSignUpRequestDto request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException(UserErrorCode.DUPLICATE_USERNAME);
@@ -54,7 +60,14 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
+            // 1. User 생성
             User user = userRepository.save(UserMapper.toEntity(request, passwordEncoder));
+
+            // 2. LOCAL UserIdentity 생성
+            UserIdentity userIdentity = UserIdentity.of(user, Provider.LOCAL, request.getUsername());
+
+            userIdentityRepository.save(userIdentity);
+
             return UserSignUpResponseDto.from(user);
         } catch (DataIntegrityViolationException e) {
             // username / email unique 제약 위반
