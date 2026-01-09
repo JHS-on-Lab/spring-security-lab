@@ -1,7 +1,5 @@
 package me.son.springsecuritylab.auth.jwt;
 
-import io.jsonwebtoken.Claims;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,10 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import me.son.springsecuritylab.auth.jwt.dto.ParsedToken;
 import me.son.springsecuritylab.auth.jwt.exception.CustomJwtException;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
-import me.son.springsecuritylab.user.domain.entity.enums.Role;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +24,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -38,14 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 // 파싱 및 검증
-                ParsedToken parsed = jwtProvider.parseToken(token);
-                Long id = Long.valueOf(parsed.getSubject());
-                Claims claims = parsed.getClaims();
-                String username = claims.get("username", String.class);
-                Role role = Role.valueOf(claims.get("role", String.class));
-                log.info("id: {}, username: {}, role: {}", id, username, role);
-
-                CustomUserDetails userDetails = new CustomUserDetails(id, username, role);
+                CustomUserDetails userDetails = jwtService.getCustomUserDetails(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
@@ -64,5 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        System.out.println(uri);
+        return uri.startsWith("/oauth2/") || uri.startsWith("/login/oauth2/");
     }
 }

@@ -9,10 +9,7 @@ import me.son.springsecuritylab.user.domain.entity.enums.Provider;
 import me.son.springsecuritylab.user.domain.repository.UserIdentityRepository;
 import me.son.springsecuritylab.user.domain.repository.UserRepository;
 import me.son.springsecuritylab.user.domain.service.UserService;
-import me.son.springsecuritylab.user.dto.UserSearchRequestDto;
-import me.son.springsecuritylab.user.dto.UserSignUpRequestDto;
-import me.son.springsecuritylab.user.dto.UserSearchResponseDto;
-import me.son.springsecuritylab.user.dto.UserSignUpResponseDto;
+import me.son.springsecuritylab.user.dto.*;
 import me.son.springsecuritylab.user.exception.UserErrorCode;
 import me.son.springsecuritylab.user.mapper.UserMapper;
 
@@ -30,6 +27,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserIdentityRepository userIdentityRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserSearchResponseDto getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+        return UserSearchResponseDto.from(user);
+    }
 
     @Override
     public Page<UserSearchResponseDto> getUsers(UserSearchRequestDto request) {

@@ -1,8 +1,6 @@
 package me.son.springsecuritylab.auth.domain.service;
 
-import me.son.springsecuritylab.auth.dto.JwtDto;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
-import me.son.springsecuritylab.user.domain.entity.enums.Role;
 
 public interface AuthService {
     /**
@@ -13,22 +11,4 @@ public interface AuthService {
      * @return 인증이 완료된 사용자 정보
      */
     CustomUserDetails authenticate(String username, String password);
-
-    /**
-     * 인증된 사용자 정보를 기반으로 JWT 토큰을 생성한다.
-     *
-     * @param id 토큰에 포함될 사용자 식별자
-     * @param username 토큰 클레임에 포함될 사용자명
-     * @param role     토큰 클레임에 포함될 사용자 권한 정보
-     * @return 생성된 JWT 토큰 정보
-     */
-    JwtDto createTokensByUser(Long id, String username, Role role);
-
-    /**
-     * JWT 토큰을 검증한다.
-     *
-     * @param token JWT 문자열
-     * @return 인증된 사용자 정보
-     */
-    CustomUserDetails validateToken(String token);
 }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import me.son.springsecuritylab.user.domain.entity.enums.Role;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -40,5 +41,20 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected User() {}
+    protected User() {
+    }
+
+    public static User of(
+            String username,
+            String password,
+            Role role,
+            String email
+    ) {
+        return User.builder()
+                .username(username)
+                .password(password)
+                .role(role)
+                .email(email)
+                .build();
+    }
 }
