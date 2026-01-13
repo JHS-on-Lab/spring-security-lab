@@ -3,6 +3,7 @@ package me.son.springsecuritylab.global.security.config;
 import lombok.RequiredArgsConstructor;
 
 import me.son.springsecuritylab.auth.jwt.JwtFilter;
+import me.son.springsecuritylab.auth.oauth2.handler.OAuth2LoginFailureHandler;
 import me.son.springsecuritylab.auth.oauth2.handler.OAuth2LoginSuccessHandler;
 import me.son.springsecuritylab.global.security.handler.CustomAccessDeniedHandler;
 import me.son.springsecuritylab.global.security.handler.CustomAuthenticationEntryPoint;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -57,6 +59,7 @@ public class SecurityConfig {
                 // OAuth2 로그인 활성화
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 // UsernamePasswordAuthenticationFilter 전에 JwtFilter 실행

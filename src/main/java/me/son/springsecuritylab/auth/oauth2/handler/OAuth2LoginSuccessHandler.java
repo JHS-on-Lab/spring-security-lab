@@ -59,7 +59,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String email = oAuth2User.getAttribute("email");
 
-        Optional<UserIdentity> identityOptional =
+        Optional<UserIdentity> userIdentity =
                 userIdentityRepository.findByProviderAndProviderUserId(
                         provider,
                         providerUserId
@@ -67,12 +67,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         User user;
 
-        if (identityOptional.isPresent()) {
-            user = identityOptional.get().getUser();
+
+        if (userIdentity.isPresent()) {
+            // 로그인 성공
+            user = userIdentity.get().getUser();
         } else if (email != null && userRepository.existsByEmail(email)) {
+            // identity 없음 + email 중복 → 계정 연동 제안
             response.sendRedirect("/oauth2/link-required");
             return;
         } else {
+            // 신규 → User + UserIdentity 생성
             user = userRepository.save(oAuth2UserFactory.create(provider, providerUserId, email));
             userIdentityRepository.save(UserIdentity.of(user, provider, providerUserId));
         }
