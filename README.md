@@ -5,6 +5,7 @@
 * Spring Security 동작 원리 이해
 * JWT 기반 인증/인가 흐름 구현
 * 예외 처리 및 계층 분리 연습
+* OAuth2 소셜 로그인
 
 ### Tech Stack
 
@@ -14,6 +15,7 @@
 * Spring Security
 * H2 Database (개발/테스트)
 * JWT (JJWT 0.13.0)
+* OAtuh2 Client
 * Swagger (Springdoc OpenAPI 3.0.1)
 * Gradle
 * Lombok
@@ -28,11 +30,14 @@ me.son.springsecuritylab
  │   │   └─ service
  │   ├─ dto 
  │   │  exception
- │   └─ jwt
- │       ├─ JwtProvider
- │       ├─ JwtFilter
- │       ├─ dto
- │       └─ exception
+ │   ├─ jwt
+ │   │   ├─ JwtProvider
+ │   │   ├─ JwtFilter
+ │   │   ├─ JwtService 
+ │   │   ├─ dto
+ │   │   └─ exception
+ │   └─ oauth2
+ │       └─ handler
  │
  ├─ global
  │   ├─ exception
@@ -53,17 +58,22 @@ me.son.springsecuritylab
      │   ├─ entity
      │   │   └─ enums
      │   ├─ repository
+     │   ├─ factory     
      │   └─ service
      ├─ dto
      ├─ mapper
      └─ exception
 ```
+
+---
+
 ### Authentication & Authorization
 
 * JWT 기반 인증 방식 사용
 * Access Token을 Authorization: Bearer <token> 헤더로 전달
 * Spring Security Filter에서 JWT 검증 후 SecurityContext에 인증 정보 저장
 * Access Token + Refresh Token 방식을 사용
+* Refresh Token은 HttpOnly Cookie로 관리
 
 #### JWT Claim 구성
 
@@ -76,6 +86,36 @@ me.son.springsecuritylab
   "role": "ROLE_USER"
 }
 ```
+
+#### OAuth2 소셜 로그인
+
+- 지원 Provider
+  - GOOGLE
+
+
+- OAuth2 설계 방식
+  - OAuth2 인증 성공 시 OAuth2LoginSuccessHandler에서 후처리
+  - Provider + ProviderUserId 기반의 UserIdentity 엔티티로 계정 관리
+  - OAuth2 로그인 이후 인증은 JWT 기반으로 통합
+  - OAuth2 전용 UserDetails는 생성하지 않고, JWT 기반 단일 인증 주체 유지
+
+
+- OAuth2 Success Flow
+  1. OAuth2 Provider 인증 성공
+  2. Provider 및 Provider User ID 추출
+  3. UserIdentity 조회
+  4. 기존 계정 → 로그인
+  5. 이메일 중복 → 계정 연동 필요
+  6. 신규 사용자 → User + UserIdentity 생성
+  7. JWT 발급 
+  8. Refresh Token → HttpOnly Cookie 
+  9. Access Token → Redirect URL(Fragment)
+  10. SPA 클라이언트로 Redirect
+
+
+- OAuth2 Success Flow
+  1. OAuth2 인증 실패 시 OAuth2LoginFailureHandler 실행
+  2. 인증 정보 정리 후 실패 페이지로 Redirect
 
 ---
 
@@ -102,18 +142,18 @@ Authorization: Bearer {accessToken}
   "data": {
     "content": [
       {
-        "email": "",
-        "password": "$2a$10$hFw/WXlsNqIC0.xrxrxt2OCKaN42UFHEgJMtlt3MJCOI9XSRgrWsW",
-        "provider": "LOCAL",
+        "id": "1",
+        "username": "testuser1",
         "role": "ROLE_USER",
-        "username": "tester1"
+        "email": "",
+        "createdAt": "2025-01-01T00:00:00"
       },
       {
-        "email": "",
-        "password": "$2a$10$IOyY2cDp.ed/cW/uB9lGKeQY.v5DIy1kr8ZSBOXcNG4eL/xlEQQUS",
-        "provider": "LOCAL",
-        "role": "ROLE_USER",
-        "username": "tester2"
+        "id": "2",
+        "username": "testuser2",
+        "role": "ROLE_ADMIN",
+        "email": "testuser2@gmail.com",
+        "createdAt": "2025-01-01T00:00:00"
       }
     ],
     "page": 0,
@@ -125,6 +165,7 @@ Authorization: Bearer {accessToken}
   "success": true
 }
 ```
+
 ---
 
 ### API Documentation (Swagger)
@@ -154,3 +195,13 @@ Bearer {accessToken}
 - 도메인별 ErrorCode enum으로 에러 코드 관리
 - GlobalExceptionHandler에서 공통 응답 처리
 - JWT 예외는 Security 계층에서 처리 후 공통 응답 반환
+
+---
+
+### TODO
+- OAuth2 Redirect URI 정책 추가 (추후 SPA Client 개발 시 연동하여 개발 예정)
+  - 클라이언트별 허용된 Redirect URI 관리
+  - Open Redirect 취약점 방지
+- OAuth2 Provider 확장
+  - GitHub, Kakao 등 추가 예정
+- 사용자 상태 기반 강제 로그아웃 처리
