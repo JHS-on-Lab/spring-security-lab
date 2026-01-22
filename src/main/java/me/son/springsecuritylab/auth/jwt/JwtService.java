@@ -74,6 +74,8 @@ public class JwtService {
             log.info("id: {}, username: {}, role: {}", id, username, role);
 
             return new CustomUserDetails(id, username, role);
+        } catch (CustomJwtException e) {
+            throw e;
         } catch (Exception e) {
             throw new CustomJwtException(JwtErrorCode.JWT_INVALID);
         }
