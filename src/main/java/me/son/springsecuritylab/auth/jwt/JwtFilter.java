@@ -58,7 +58,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        System.out.println(uri);
         return uri.startsWith("/oauth2/") || uri.startsWith("/login/oauth2/");
     }
 }
