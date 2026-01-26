@@ -77,4 +77,12 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(UserErrorCode.DUPLICATE_USER);
         }
     }
+
+    @Override
+    public UserMeResponseDto getMyInfo(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        return UserMeResponseDto.from(user);
+    }
 }

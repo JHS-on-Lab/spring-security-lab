@@ -35,4 +35,12 @@ public interface UserService {
      * @return 등록된 사용자 정보
      */
     UserSignUpResponseDto addUser(UserSignUpRequestDto request);
+
+    /**
+     * 로그인한 사용자 정보를 조회힙니다.
+     *
+     * @param id 사용자ID
+     * @return 조회된 사용자 정보
+     */
+    UserMeResponseDto getMyInfo(Long id);
 }

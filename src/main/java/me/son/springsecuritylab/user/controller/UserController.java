@@ -7,13 +7,12 @@ import lombok.extern.log4j.Log4j2;
 
 import me.son.springsecuritylab.global.paging.dto.PageResponseDto;
 import me.son.springsecuritylab.global.response.ApiResponse;
+import me.son.springsecuritylab.global.security.CustomUserDetails;
 import me.son.springsecuritylab.user.domain.service.UserService;
-import me.son.springsecuritylab.user.dto.UserSearchRequestDto;
-import me.son.springsecuritylab.user.dto.UserSignUpRequestDto;
-import me.son.springsecuritylab.user.dto.UserSearchResponseDto;
-import me.son.springsecuritylab.user.dto.UserSignUpResponseDto;
+import me.son.springsecuritylab.user.dto.*;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
@@ -44,5 +43,11 @@ public class UserController {
         log.info("addUser request: {}", request);
         UserSignUpResponseDto user = userService.addUser(request);
         return ApiResponse.success(user);
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<UserMeResponseDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        log.info("getMyInfo request username: {}", userDetails.getUsername());
+        return ApiResponse.success(userService.getMyInfo(userDetails.getId()));
     }
 }

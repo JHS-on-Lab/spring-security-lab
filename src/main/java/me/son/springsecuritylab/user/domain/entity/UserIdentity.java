@@ -39,8 +39,7 @@ public class UserIdentity {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected UserIdentity() {
-    }
+    protected UserIdentity() {}
 
     public static UserIdentity of(
             User user,
