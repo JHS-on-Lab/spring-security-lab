@@ -58,7 +58,6 @@ public class AuthController {
 
         return ApiResponse.success(AuthResponseDto.builder()
                 .accessToken(tokens.getAccessToken())
-                .username(user.getUsername())
                 .build())
                 ;
     }

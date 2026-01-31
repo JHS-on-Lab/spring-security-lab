@@ -39,7 +39,7 @@ public interface UserService {
     /**
      * 로그인한 사용자 정보를 조회힙니다.
      *
-     * @param id 사용자ID
+     * @param id 사용자 ID
      * @return 조회된 사용자 정보
      */
     UserMeResponseDto getMyInfo(Long id);
