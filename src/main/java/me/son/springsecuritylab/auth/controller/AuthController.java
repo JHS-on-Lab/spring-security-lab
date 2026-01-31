@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 
 import me.son.springsecuritylab.auth.domain.service.AuthService;
 import me.son.springsecuritylab.auth.dto.AuthRequestDto;
-import me.son.springsecuritylab.auth.dto.AuthResponseDto;
 import me.son.springsecuritylab.auth.dto.JwtDto;
 import me.son.springsecuritylab.auth.jwt.JwtService;
 import me.son.springsecuritylab.global.response.ApiResponse;
@@ -29,7 +28,7 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/sign-in")
-    public ApiResponse<AuthResponseDto> signIn(@RequestBody AuthRequestDto request, HttpServletResponse response) {
+    public ApiResponse<String> signIn(@RequestBody AuthRequestDto request, HttpServletResponse response) {
         log.info("signIn request: {}", request.toString());
         CustomUserDetails user = authService.authenticate(request.getUsername(), request.getPassword());
 
@@ -37,15 +36,11 @@ public class AuthController {
         // Refresh Token 은 HTTP Only Cookie 저장
         addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
 
-        return ApiResponse.success(AuthResponseDto.builder()
-                .accessToken(tokens.getAccessToken())
-                .username(user.getUsername())
-                .build())
-                ;
+        return ApiResponse.success(tokens.getAccessToken());
     }
 
     @PostMapping("/reissue")
-    public ApiResponse<AuthResponseDto> reissue(@CookieValue(value = "refreshToken") String refreshToken, HttpServletResponse response) {
+    public ApiResponse<String> reissue(@CookieValue(value = "refreshToken") String refreshToken, HttpServletResponse response) {
         log.info("reissue refreshToken: {}", refreshToken);
 
         Long id = jwtService.getSubject(refreshToken);
@@ -56,10 +51,7 @@ public class AuthController {
         // Refresh Token 은 HTTP Only Cookie 저장
         addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
 
-        return ApiResponse.success(AuthResponseDto.builder()
-                .accessToken(tokens.getAccessToken())
-                .build())
-                ;
+        return ApiResponse.success(tokens.getAccessToken());
     }
 
 }

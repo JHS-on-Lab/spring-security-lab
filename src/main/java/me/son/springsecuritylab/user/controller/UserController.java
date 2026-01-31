@@ -48,6 +48,7 @@ public class UserController {
     @GetMapping("/me")
     public ApiResponse<UserMeResponseDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         log.info("getMyInfo request username: {}", userDetails.getUsername());
-        return ApiResponse.success(userService.getMyInfo(userDetails.getId()));
+        UserMeResponseDto user = userService.getMyInfo(userDetails.getId());
+        return ApiResponse.success(user);
     }
 }
