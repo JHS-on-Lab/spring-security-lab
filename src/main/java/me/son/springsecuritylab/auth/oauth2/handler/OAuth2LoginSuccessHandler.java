@@ -41,7 +41,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         Provider provider = Provider.valueOf(token.getAuthorizedClientRegistrationId().toUpperCase());
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-
+        System.out.println(oAuth2User);
         String providerUserId = extractProviderUserId(provider, oAuth2User);
         String email = oAuth2User.getAttribute("email");
 
@@ -69,7 +69,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private String extractProviderUserId(Provider provider, OAuth2User oAuth2User) {
         return switch (provider) {
             case GOOGLE -> oAuth2User.getAttribute("sub");
-            case KAKAO, GITHUB -> String.valueOf(Objects.requireNonNull(oAuth2User.getAttribute("id")));
+            case KAKAO, GITHUB -> {
+                Object id = oAuth2User.getAttribute("id");
+                if (id == null) {
+                    throw new IllegalStateException("Missing provider user id");
+                }
+                yield id.toString();
+            }
             default -> throw new IllegalStateException("Unsupported provider: " + provider);
         };
     }
