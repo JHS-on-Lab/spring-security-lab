@@ -71,7 +71,6 @@ public class JwtService {
             Claims claims = parsed.getClaims();
             String username = claims.get("username", String.class);
             Role role = Role.valueOf(claims.get("role", String.class));
-            log.info("id: {}, username: {}, role: {}", id, username, role);
 
             return new CustomUserDetails(id, username, role);
         } catch (CustomJwtException e) {

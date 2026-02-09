@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static me.son.springsecuritylab.global.util.CookieUtil.addHttpOnlyCookie;
 
@@ -41,24 +40,30 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         Provider provider = Provider.valueOf(token.getAuthorizedClientRegistrationId().toUpperCase());
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        System.out.println(oAuth2User);
         String providerUserId = extractProviderUserId(provider, oAuth2User);
         String email = oAuth2User.getAttribute("email");
 
+        // state 파싱
+        String state = request.getParameter("state");
+        Long userId = parseLinkUserId(state);
         try {
-            // OAuth2 로그인 정책은 전부 Service에 위임
-            Oauth2AuthDto authDto = oAuth2AuthService.handleLogin(provider, providerUserId, email);
+            // 계정 연동
+            if (userId != null) {
+                oAuth2AuthService.handleLink(userId, provider, providerUserId, email);
+                response.sendRedirect(SPA_BASE_URL + "/account-linking-status");
+            }
+            // 로그인
+            else {
+                Oauth2AuthDto authDto = oAuth2AuthService.handleLogin(provider, providerUserId, email);
 
-            // 로그인 성공 케이스만 JWT 발급
-            JwtDto tokens = jwtService.createTokens(authDto.getId(), authDto.getUsername(), authDto.getRole());
+                // 로그인 성공 케이스만 JWT 발급
+                JwtDto tokens = jwtService.createTokens(authDto.getId(), authDto.getUsername(), authDto.getRole());
 
-            addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
-            response.sendRedirect(SPA_BASE_URL + "/oauth2/success#accessToken=" + tokens.getAccessToken());
-
+                addHttpOnlyCookie(response, "refreshToken", tokens.getRefreshToken());
+                response.sendRedirect(SPA_BASE_URL + "/oauth2/success#accessToken=" + tokens.getAccessToken());
+            }
         } catch (OAuth2LinkRequiredException e) {
-            // 계정 연동 필요
             log.info("OAuth2 link required. provider={}, email={}", e.getProvider(), e.getEmail());
-
             response.sendRedirect(SPA_BASE_URL + "/oauth2/link-required");
         }
     }
@@ -78,5 +83,23 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             }
             default -> throw new IllegalStateException("Unsupported provider: " + provider);
         };
+    }
+
+    /**
+     * state 에서 연동 대상 userId 추출
+     */
+    private Long parseLinkUserId(String state) {
+        try {
+            if (state != null && state.contains("__")) {
+                String[] parts = state.split("__");
+                // 배열 크기 체크 및 숫자 변환
+                if (parts.length >= 2) {
+                    return Long.valueOf(parts[1]);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Invalid link state value: {}, error: {}", state, e.getMessage());
+        }
+        return null;
     }
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.son.springsecuritylab.auth.jwt.JwtFilter;
 import me.son.springsecuritylab.auth.oauth2.handler.OAuth2LoginFailureHandler;
 import me.son.springsecuritylab.auth.oauth2.handler.OAuth2LoginSuccessHandler;
+import me.son.springsecuritylab.auth.oauth2.resolver.CustomOAuth2AuthorizationRequestResolver;
 import me.son.springsecuritylab.global.security.handler.CustomAccessDeniedHandler;
 import me.son.springsecuritylab.global.security.handler.CustomAuthenticationEntryPoint;
 
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,6 +34,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final ClientRegistrationRepository clientRegistrationRepository;
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -70,6 +73,11 @@ public class SecurityConfig {
 
                 // OAuth2 로그인 활성화
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.authorizationRequestResolver(
+                                        new CustomOAuth2AuthorizationRequestResolver(clientRegistrationRepository)
+                                )
+                        )
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
                 )

@@ -8,6 +8,7 @@ import me.son.springsecuritylab.auth.exception.AuthErrorCode;
 import me.son.springsecuritylab.global.exception.BusinessException;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,11 +18,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final AuthenticationManager authenticationManager;
+    private final ObjectProvider<AuthenticationManager> authenticationManagerProvider;
 
     @Override
     public CustomUserDetails authenticate(String username, String password) {
         try {
+            AuthenticationManager authenticationManager = authenticationManagerProvider.getObject();
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             return (CustomUserDetails) authentication.getPrincipal();
         } catch (BadCredentialsException e) {

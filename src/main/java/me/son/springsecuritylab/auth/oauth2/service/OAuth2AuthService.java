@@ -51,4 +51,22 @@ public class OAuth2AuthService {
                 user.getRole()
         );
     }
+
+    public void handleLink(Long id, Provider provider, String providerUserId, String email) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalStateException("User not found: " + id));
+
+        userIdentityRepository.findByProviderAndProviderUserId(provider, providerUserId).ifPresent(existing -> {
+            if (!existing.getUser().getId().equals(id)) {
+                throw new IllegalStateException("OAuth2 account already linked to another user");
+            }
+        });
+
+        boolean alreadyLinked = userIdentityRepository.existsByUserIdAndProvider(id, provider);
+
+        if (alreadyLinked) {
+            return;
+        }
+
+        userIdentityRepository.save(UserIdentity.of(user, provider, providerUserId));
+    }
 }
