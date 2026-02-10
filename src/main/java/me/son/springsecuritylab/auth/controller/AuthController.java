@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import me.son.springsecuritylab.auth.domain.service.AuthService;
 import me.son.springsecuritylab.auth.dto.AuthRequestDto;
 import me.son.springsecuritylab.auth.dto.JwtDto;
-import me.son.springsecuritylab.auth.jwt.JwtService;
+import me.son.springsecuritylab.auth.jwt.service.JwtService;
 import me.son.springsecuritylab.global.response.ApiResponse;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
 import me.son.springsecuritylab.user.domain.service.UserService;

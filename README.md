@@ -33,11 +33,15 @@ me.son.springsecuritylab
  │   ├─ jwt
  │   │   ├─ JwtProvider
  │   │   ├─ JwtFilter
- │   │   ├─ JwtService 
+ │   │   ├─ service 
  │   │   ├─ dto
  │   │   └─ exception
  │   └─ oauth2
+ │       └─ dto
+ │       └─ exception
  │       └─ handler
+ │       └─ resolver
+ │       └─ service
  │
  ├─ global
  │   ├─ exception
@@ -91,11 +95,13 @@ me.son.springsecuritylab
 
 - 지원 Provider
   - GOOGLE
+  - KAKAO
 
 
 - OAuth2 설계 방식
   - OAuth2 인증 성공 시 OAuth2LoginSuccessHandler에서 후처리
   - Provider + ProviderUserId 기반의 UserIdentity 엔티티로 계정 관리
+  - OAuth2 Success Handler 내부에서 “로그인”과 “계정 연동” 분기 처리
   - OAuth2 로그인 이후 인증은 JWT 기반으로 통합
   - OAuth2 전용 UserDetails는 생성하지 않고, JWT 기반 단일 인증 주체 유지
 
@@ -203,5 +209,5 @@ Bearer {accessToken}
   - 클라이언트별 허용된 Redirect URI 관리
   - Open Redirect 취약점 방지
 - OAuth2 Provider 확장
-  - GitHub, Kakao 등 추가 예정
+  - GitHub, ~~Kakao~~ 등 추가 예정
 - 사용자 상태 기반 강제 로그아웃 처리

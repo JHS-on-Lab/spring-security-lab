@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import me.son.springsecuritylab.auth.jwt.exception.CustomJwtException;
+import me.son.springsecuritylab.auth.jwt.service.JwtService;
 import me.son.springsecuritylab.global.security.CustomUserDetails;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import me.son.springsecuritylab.auth.dto.JwtDto;
-import me.son.springsecuritylab.auth.jwt.JwtService;
+import me.son.springsecuritylab.auth.jwt.service.JwtService;
 import me.son.springsecuritylab.auth.oauth2.dto.Oauth2AuthDto;
 import me.son.springsecuritylab.auth.oauth2.exception.OAuth2LinkRequiredException;
 import me.son.springsecuritylab.auth.oauth2.service.OAuth2AuthService;

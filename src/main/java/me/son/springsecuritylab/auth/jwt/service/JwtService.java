@@ -1,4 +1,4 @@
-package me.son.springsecuritylab.auth.jwt;
+package me.son.springsecuritylab.auth.jwt.service;
 
 import io.jsonwebtoken.Claims;
 
@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import me.son.springsecuritylab.auth.dto.JwtDto;
+import me.son.springsecuritylab.auth.jwt.JwtProvider;
 import me.son.springsecuritylab.auth.jwt.dto.ParsedToken;
 import me.son.springsecuritylab.auth.jwt.exception.CustomJwtException;
 import me.son.springsecuritylab.auth.jwt.exception.JwtErrorCode;
