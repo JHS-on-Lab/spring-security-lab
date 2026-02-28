@@ -35,3 +35,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/spring_security_lab_vm_options.txt
