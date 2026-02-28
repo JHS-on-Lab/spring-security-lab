@@ -32,12 +32,12 @@ public class CustomAuthenticationEntryPoint extends AbstractSecurityErrorHandler
         if (jwtExObj instanceof CustomJwtException jwtException) {
             JwtErrorCode errorCode = jwtException.getErrorCode();
             log.warn("JWT Error: {}", errorCode.getMessage());
-            writeErrorResponse(response, errorCode.getStatus().value(), errorCode.getMessage());
+            writeErrorResponse(response, errorCode);
         } else {
             // 일반 인증 실패 (토큰 없음, 잘못된 인증 등)
             log.warn("Auth Error: {}", authException.getMessage());
             AuthErrorCode errorCode = AuthErrorCode.UNAUTHORIZED;
-            writeErrorResponse(response, errorCode.getStatus().value(), errorCode.getMessage());
+            writeErrorResponse(response, errorCode);
         }
     }
 }

@@ -29,6 +29,6 @@ public class CustomAccessDeniedHandler extends AbstractSecurityErrorHandler impl
         AuthErrorCode errorCode = AuthErrorCode.ACCESS_DENIED;
         log.warn("[Access Denied] {}", accessDeniedException.getMessage());
 
-        writeErrorResponse(response, errorCode.getStatus().value(), errorCode.getMessage());
+        writeErrorResponse(response, errorCode);
     }
 }

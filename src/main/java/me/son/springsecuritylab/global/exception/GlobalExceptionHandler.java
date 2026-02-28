@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(errorCode.getStatus())
-                .body(ApiResponse.failure(errorCode.getMessage()));
+                .body(ApiResponse.failure(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(CustomJwtException.class)
@@ -24,13 +24,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(errorCode.getStatus())
-                .body(ApiResponse.failure(errorCode.getMessage()));
+                .body(ApiResponse.failure(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         return ResponseEntity
                 .status(500)
-                .body(ApiResponse.failure("서버 오류가 발생했습니다."));
+                .body(ApiResponse.failure("INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."));
     }
 }
